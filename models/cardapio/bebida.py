@@ -5,5 +5,5 @@ class Bebida(ItemCardapio):
         super().__init__(nome,preco)
         self.tamanho = tamanho
         
-    
-        
+    def aplicar_desconto(self):
+        self._preco -= (self._preco * 0.04)        
