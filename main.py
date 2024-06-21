@@ -1,21 +1,44 @@
-from models.restaurante import Restaurante
-from models.cardapio.bebida import Bebida
-from models.cardapio.prato import Prato
+from fastapi import FastAPI, Query
+import requests
 
-  
-pizzaria = Restaurante('Pizzaria da Mooca', 'Pizza')
-pizza = Prato('Pizza de Mussarela', 90.00, 'Muita mussarela')
-pizza.aplicar_desconto()
-bebida = Bebida('Coca-cola', 10.0, '600ml')
-bebida.aplicar_desconto()
+app = FastAPI()
 
-pizzaria.adicionar_no_cardapio(pizza)
-pizzaria.adicionar_no_cardapio(bebida)
+
+@app.get("/api/hello/")
+def hello_word():
+    return {"Hello": "World"}
+
+@app.get("/api/restaurantes/")
+def get_restaurantes(restaurante: str = Query(None)):
+    '''
     
-def main():
-    pizzaria.exibir_cardapio
+    Endpoint para visualizar o Cardapios.
+    '''
+    url ='https://guilhermeonrails.github.io/api-restaurantes/restaurantes.json'
+
+    response = requests.get(url)
+
+
+    if response.status_code == 200:
+        dados_json = response.json()
+        if restaurante is None:
+            return {
+                'Dados': dados_json
+            }
+            
+        dados_restaurante = []
+        for item in dados_json:
+            if item['Company'] == restaurante:
+                dados_restaurante.append({
+                  'item': item['Item'],
+                    'price': item['price'],
+                    'description': item['description']
+                })
+        return {
+            'Restaurante': restaurante,
+            'Cardapio': dados_restaurante
+        }
+            
+    else:
+        print(f' Erro Numero: {response.status_code}')
     
-    
-    
-if __name__ ==  '__main__':
-    main()
